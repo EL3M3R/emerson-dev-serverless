@@ -11,10 +11,18 @@ const getFilms = async(event) => {
 
         const apiUrl = `${swapiUrl}/films/?format=json`;
         const response = await httpUtils.get(apiUrl);
-       
+        const sourceLanguageCode = 'en';
+        const targetLanguageCode = 'es'; 
+
+        const translatedJson = await translationUtils.translateJson(
+          response,
+          sourceLanguageCode,
+          targetLanguageCode
+        );    
+
         return {
           statusCode: 200,
-          body: JSON.stringify(response),
+          body:  JSON.stringify(translatedJson)
         };
       } catch (error) {
         console.log("getFilms error" , error)
