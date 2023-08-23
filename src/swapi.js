@@ -42,8 +42,6 @@ const getFilmById = async(event) => {
           targetLanguageCode
         );    
     
-        console.log(" translatedJson data CHANGE ", translatedJson)
-
         return {
             statusCode: 200,
             body:  JSON.stringify(translatedJson)
