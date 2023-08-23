@@ -1,0 +1,64 @@
+service: aws-lamda-emerson
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-west-2
+  environment:
+    SWAPI_URL_API: https://swapi.py4e.com/api/
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - translate:TranslateText
+      Resource: 
+        - arn:aws:dynamodb:us-west-2:265460376892:table/TaskTable
+
+plugins:
+  - serverless-openapi-documentation
+
+functions:
+  createTask:
+    handler: src/task.addTask
+    events:
+      - httpApi:
+          path: /tasks
+          method: post
+  getTasks:
+    handler: src/task.getTasks
+    events:
+      - httpApi:
+          path: /tasks
+          method: get
+  getTask:
+    handler: src/task.getTask
+    events:
+      - httpApi:
+          path: /task/{id}
+          method: get
+  swapiFilms:
+    handler: src/swapi.getFilms
+    events:
+      - httpApi:
+          path: /swapi/films
+          method: get
+  swapiFilmId:
+    handler: src/swapi.getFilmById
+    events:
+      - httpApi:
+          path: /swapi/film/{id}
+          method: get
+resources:
+  Resources:
+    TaskTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: TaskTable
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
